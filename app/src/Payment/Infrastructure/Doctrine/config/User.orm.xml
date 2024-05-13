@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity
+        name="App\Payment\Domain\Model\User"
+        inheritance-type="SINGLE_TABLE">
+        <discriminator-column name="type" enum-type="App\Payment\Domain\Model\UserType"/>
+        <discriminator-map>
+            <discriminator-mapping value="customer" class="App\Payment\Domain\Model\Customer"/>
+            <discriminator-mapping value="merchant" class="App\Payment\Domain\Model\Merchant"/>
+        </discriminator-map>
+        <unique-constraints>
+            <unique-constraint columns="taxpayer_number,email" name="unique_user" />
+        </unique-constraints>
+        <id name="id" type="uuid">
+            <generator strategy="CUSTOM" />
+            <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
+        </id>
+        <field name="fullName" type="string" nullable="false"/>
+        <field name="taxpayerNumber" column="taxpayer_number" type="string" nullable="false"/>
+        <field name="email" column="email" type="string" nullable="false"/>
+        <field name="password" type="string" nullable="false"/>
+    </entity>
+</doctrine-mapping>

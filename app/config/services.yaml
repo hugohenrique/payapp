@@ -1,0 +1,33 @@
+imports:
+    - { resource: '../src/Payment/Infrastructure/Framework/config/services.yaml' }
+
+parameters:
+    payment_authorizer_url: '%env(PAYMENT_AUTHORIZER_URL)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    _instanceof:
+        App\Payment\Application\CommandHandler:
+            tags:
+                - { name: messenger.message_handler, bus: command.bus }
+        App\Payment\Application\EventHandler:
+            tags:
+                - { name: messenger.message_handler, bus: event.bus }
+
+    App\Payment\Infrastructure\PaymentAuthorizerGateway:
+        arguments:
+            $baseUrl: '%payment_authorizer_url%'
+
+    App\Payment\Infrastructure\Doctrine\Repository\DoctrineUserRepository: ~
+    App\Payment\Infrastructure\Doctrine\Repository\DoctrineWalletRepository: ~
+    App\Payment\Infrastructure\Doctrine\Repository\DoctrineFinancialTransactionRepository: ~

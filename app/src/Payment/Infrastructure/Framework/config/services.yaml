@@ -1,0 +1,12 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Payment\Application\Service\Validator\UserValidator: ~
+    App\Payment\Application\Service\Validator\TransactionValidator: ~
+
+    App\Payment\Infrastructure\Http\:
+        resource: '../../Http'
+        tags: ['controller.service_arguments']
+
