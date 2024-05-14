@@ -38,3 +38,8 @@ Para efetuar uma transferência financeira entre usuários.
 
 ### DELETE /api/transactions
 Para que em caso de inconsistência, uma trasferência consiga ser revertida.
+
+Um pequeno modelo de como geralmente costumo mapear um fluxo:
+
+
+![arch](arch.png)
