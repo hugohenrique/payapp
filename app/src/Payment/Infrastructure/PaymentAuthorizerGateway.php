@@ -6,7 +6,7 @@ namespace App\Payment\Infrastructure;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class PaymentAuthorizerGateway
+class PaymentAuthorizerGateway
 {
     public function __construct(
         private HttpClientInterface $httpClient,

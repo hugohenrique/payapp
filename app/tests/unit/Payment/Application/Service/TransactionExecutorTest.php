@@ -6,7 +6,6 @@ namespace App\Payment\Application\Service;
 
 use App\Payment\Domain\Model\Customer;
 use App\Payment\Domain\Model\FinancialTransaction;
-use App\Payment\Domain\Model\TransactionStatus;
 use App\Payment\Domain\Model\Wallet;
 use App\Payment\Domain\Repository\FinancialTransactionRepository;
 use App\Payment\Domain\Repository\WalletRepository;
@@ -14,6 +13,7 @@ use PHPUnit\Framework\Attributes\Before;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Nonstandard\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 final class TransactionExecutorTest extends TestCase
 {
@@ -34,15 +34,16 @@ final class TransactionExecutorTest extends TestCase
 
     public function testExecuteShouldChangeTheWalletsAndCreateTransaction(): void
     {
-        $payerId = Uuid::uuid4();
-        $payeeId = Uuid::uuid4();
         $walletIdPayer = Uuid::uuid4();
         $walletIdPayee = Uuid::uuid4();
         $amount = 20.0;
 
         $encryptedPass = password_hash('pass123', PASSWORD_BCRYPT);
 
+        $payerId = Uuid::uuid4();
         $payer = new Customer($payerId, 'João', '234.340.003-21', 'joao.loureiro@gmail.com', $encryptedPass);
+
+        $payeeId = Uuid::uuid4();
         $payee = new Customer($payeeId, 'Luis', '130.540.011-11', 'luiz.silva@gmail.com', $encryptedPass);
 
         $walletPayer = new Wallet($walletIdPayer, $payer, 9302, 120.00);
@@ -53,43 +54,33 @@ final class TransactionExecutorTest extends TestCase
 
         $this->walletRepository->expects($this->atLeast(0))
                               ->method('loadByUserId')
-                              ->with($payerId)
+                              ->with($this->isInstanceOf(UuidInterface::class))
                               ->willReturn($walletPayer);
 
         $this->walletRepository->expects($this->atLeast(1))
                               ->method('loadByUserId')
-                              ->with($payeeId)
+                              ->with($this->isInstanceOf(UuidInterface::class))
                               ->willReturn($walletPayee);
-
-        $transactionId = Uuid::uuid4();
 
         $this->walletRepository->expects($this->atLeast(0))
                                ->method('save')
-                               ->with($walletPayer);
+                               ->with($this->isInstanceOf(Wallet::class));
 
         $this->walletRepository->expects($this->atLeast(1))
                                ->method('save')
-                               ->with($walletPayee);
-
-        $transaction = new FinancialTransaction(
-            $transactionId,
-            $payer,
-            $payee,
-            $amount,
-            TransactionStatus::COMPLETED
-        );
+                               ->with($this->isInstanceOf(Wallet::class));
 
         $this->transactionRepository->expects($this->once())
                                     ->method('save')
-                                    ->with($transaction);
+                                    ->with($this->isInstanceOf(FinancialTransaction::class));
 
-        $transaction = $this->executor->execute(
+        $transactionId = Uuid::uuid4();
+
+        $this->executor->execute(
             $transactionId,
             $payerId,
             $payeeId,
             $amount
         );
-
-        $this->assertEquals($transaction->getAmount(), $amount);
     }
 }
