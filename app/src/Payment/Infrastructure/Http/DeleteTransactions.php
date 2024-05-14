@@ -28,7 +28,6 @@ final class DeleteTransactions
             $response = new JsonResponse(null, 204);
             $response->headers->set('Location', '/api/transactions/' . (string) $transactionId);
         } catch (Throwable $e) {
-            dd($e);
             $response = new JsonResponse('Error to create the transaction', 400);
         }
 

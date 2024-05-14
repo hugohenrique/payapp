@@ -10,6 +10,12 @@ api_post_transactions:
     controller: App\Payment\Infrastructure\Http\PostTransactions
     defaults:
         _format: json
+api_post_transfer:
+    path: /api/transfer
+    methods: ['POST']
+    controller: App\Payment\Infrastructure\Http\PostTransactions
+    defaults:
+        _format: json
 api_delete_transaction:
     path: /api/transactions/{id}
     methods: ['DELETE']
